@@ -1,0 +1,4 @@
+1. dir
+2. cd  file name
+3. \Users\eranj\Desktop\ACADAMIC FOLDER\Fourth Semester\CO226-Data BASE SYSTERM
+4. "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p

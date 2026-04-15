@@ -1,0 +1,135 @@
+1)CREATE TABLE Student (
+    Name VARCHAR(50),
+    RegNo INT PRIMARY KEY,
+    GPA DECIMAL(3,2),
+    ConvocationRegNo INT,
+    Class VARCHAR(50)
+);
+
+INSERT INTO Student (Name, RegNo, GPA)
+VALUES 
+('Akila', 154, 3.80),
+('Ishta', 149, 3.55),
+('Chamara', 327, 3.25),
+('Haritha', 118, 3.75),
+('Saadia', 147, 4.00),
+('Thamish', 379, 3.95),
+('Nimuthu', 398, 3.25),
+('Ridma', 155, 3.85),
+('Ravindu', 224, 3.10),
+('Vilakshan', 373, 3.70);
+
+
+
+2)CREATE TABLE Convocation (
+    ConvocationRegNo INT PRIMARY KEY,
+    RegNo INT,
+    LastName VARCHAR(50),
+    Address VARCHAR(100),
+    Age INT,
+    FOREIGN KEY (RegNo) REFERENCES Student(RegNo)
+);
+
+
+3)
+
+DELIMITER //
+
+CREATE PROCEDURE RegisterStudent(
+    IN p_ConvocationRegNo INT,
+    IN p_RegNo INT,
+    IN p_LastName VARCHAR(50),
+    IN p_Address VARCHAR(100),
+    IN p_Age INT
+)
+BEGIN
+    -- Insert into Convocation table
+    INSERT INTO Convocation (ConvocationRegNo, RegNo, LastName, Address, Age)
+    VALUES (p_ConvocationRegNo, p_RegNo, p_LastName, p_Address, p_Age);
+    
+    -- Update Student table
+    UPDATE Student
+    SET ConvocationRegNo = p_ConvocationRegNo
+    WHERE RegNo = p_RegNo;
+END //
+
+DELIMITER ;
+
+
+4)
+CALL RegisterStudent(1, 154, 'Perera', 'Colombo', 24);
+CALL RegisterStudent(2, 118, 'Silva', 'Kandy', 23);
+CALL RegisterStudent(3, 147, 'Khan', 'Jaffna', 22);
+CALL RegisterStudent(4, 379, 'Fernando', 'Galle', 24);
+CALL RegisterStudent(5, 155, 'Senanayake', 'Kurunegala', 23);
+
+
+5)
+CREATE VIEW Registered AS
+SELECT s.Name, s.RegNo, s.GPA, s.ConvocationRegNo, c.Address, c.Age
+FROM Student s
+JOIN Convocation c ON s.RegNo = c.RegNo;
+
+
+6)
+
+CREATE VIEW NotRegistered AS
+SELECT s.Name, s.RegNo, s.GPA, '' AS Address, NULL AS Age
+FROM Student s
+WHERE s.ConvocationRegNo IS NULL;
+
+
+7)
+CREATE TABLE LateRegistration (
+    ConvocationRegNo INT PRIMARY KEY,
+    RegNo INT,
+    LastName VARCHAR(50),
+    Address VARCHAR(100),
+    Age INT,
+    FOREIGN KEY (RegNo) REFERENCES Student(RegNo)
+);
+
+
+8)
+DELIMITER //
+
+CREATE TRIGGER AfterLateRegistration
+AFTER INSERT ON LateRegistration
+FOR EACH ROW
+BEGIN
+    UPDATE Student
+    SET ConvocationRegNo = NEW.ConvocationRegNo
+    WHERE RegNo = NEW.RegNo;
+END //
+
+DELIMITER ;
+
+
+9)
+INSERT INTO LateRegistration VALUES (6, 149, 'Perera', 'Matara', 22);
+INSERT INTO LateRegistration VALUES (7, 327, 'Rajapaksha', 'Anuradhapura', 25);
+INSERT INTO LateRegistration VALUES (8, 398, 'Karunaratne', 'Badulla', 23);
+INSERT INTO LateRegistration VALUES (9, 224, 'Ekanayake', 'Colombo', 24);
+INSERT INTO LateRegistration VALUES (10, 373, 'Pathirana', 'Galle', 24);
+
+10)
+
+DELIMITER //
+
+CREATE PROCEDURE AssignClass()
+BEGIN
+    UPDATE Student
+    SET Class = 
+        CASE
+            WHEN GPA >= 3.7 THEN 'First Class Honors'
+            WHEN GPA >= 3.3 THEN 'Second Class Honors - Upper Division'
+            WHEN GPA >= 2.7 THEN 'Second Class Honors - Lower Division'
+            WHEN GPA >= 2.0 THEN 'Third Class Honors'
+            ELSE 'No Honors'
+        END;
+END //
+
+DELIMITER ;
+
+-- Call the procedure
+CALL AssignClass();

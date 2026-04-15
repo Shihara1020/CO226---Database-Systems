@@ -1,0 +1,280 @@
+task 1
+
+SELECT 
+ movie.movie_id,movie.title,rating.stars
+FROM
+ movie
+LEFT JOIN 
+ rating ON movie.movie_id = rating.movie_id;
+ 
+
+SELECT 
+ movie.movie_id,movie.title,rating.stars
+FROM
+ movie
+JOIN 
+ rating ON movie.movie_id = rating.movie_id;
+
+
+SELECT 
+ movie.movie_id,movie.title,reviewer.reviewer_id,rating.stars
+FROM
+ movie
+JOIN 
+ rating ON movie.movie_id = rating.movie_id
+JOIN
+ reviewer ON rating.reviewer_id = reviewer.reviewer_id;
+
+
+========================================================================
+task 2
+
+SELECT 
+ movie.movie_id,movie.title,reviewer.reviewer_id,rating.stars
+FROM
+ movie
+JOIN
+ rating ON movie.movie_id = rating.movie_id
+JOIN 
+ reviewer ON rating.reviewer_id = reviewer.reviewer_id
+WHERE
+ rating.stars<=3;
+
+========================================================================
+
+task 3
+
+SELECT 
+movie.movie_id,movie.title,reviewer.reviewer_id,reviewer.reviewer_name,rating.stars
+FROM
+ movie
+JOIN
+ rating ON movie.movie_id = rating.movie_id
+JOIN 
+ reviewer ON rating.reviewer_id = reviewer.reviewer_id;
+
+========================================================================
+
+task 4
+
+SELECT 
+movie.movie_id,movie.title,reviewer.reviewer_id,reviewer.reviewer_name,rating.stars
+FROM
+ movie
+JOIN
+ rating ON movie.movie_id = rating.movie_id
+JOIN 
+ reviewer ON rating.reviewer_id = reviewer.reviewer_id
+WHERE
+ rating.stars=5
+;
+
+
+========================================================================
+
+task 5
+
+SELECT
+ movie.title,reviewer.reviewer_name,rating.stars
+FROM
+ movie
+JOIN
+ rating ON movie.movie_id=rating.movie_id
+JOIN
+ reviewer ON rating.reviewer_id = reviewer.reviewer_id
+WHERE
+ rating.rating_date IS NULL;
+
+========================================================================
+
+task 6
+
+SELECT *
+FROM reviewer
+WHERE reviewer_name LIKE '%Martinez';
+
+
+========================================================================
+
+task 7
+
+SELECT *
+FROM rating
+WHERE CAST(SUBSTRING(rating_date, 9, 2) AS UNSIGNED) < 10;
+
+
+========================================================================
+
+task 8
+
+SELECT 
+ rating.movie_id,
+ rating.reviewer_id,
+ rating.stars AS original_stars,
+ rating.stars+1 AS increased_stars 
+FROM
+ rating
+JOIN 
+ reviewer ON rating.reviewer_id = reviewer.reviewer_id
+WHERE
+ reviewer.reviewer_name='Brittany Harris';
+
+SELECT 
+ movie_id,
+ reviewer_id,
+ stars AS original_stars,
+ stars+1 AS increased_stars 
+FROM
+ rating
+WHERE
+ reviewer_id=(SELECT reviewer_id FROM reviewer WHERE reviewer_name='Brittany Harris');
+
+
+========================================================================
+
+task 9
+
+SELECT 
+ movie.title,
+ reviewer.reviewer_name,
+ rating.stars
+FROM
+ movie
+JOIN
+ rating ON movie.movie_id=rating.movie_id
+JOIN
+ reviewer ON rating.reviewer_id=reviewer.reviewer_id
+ORDER BY 
+ movie.title ASC;
+ 
+========================================================================
+
+task 10
+
+SELECT 
+ movie.title,
+ rating.stars,
+ rating.rating_date
+FROM
+ movie
+JOIN
+ rating ON movie.movie_id=rating.movie_id
+
+ORDER BY 
+ movie.title ASC,
+ rating.stars DESC,
+ rating.rating_date DESC;
+
+
+========================================================================
+
+task 11
+
+SELECT * 
+FROM
+ movie
+WHERE
+ movie.director IN (SELECT reviewer_name FROM reviewer);
+
+
+
+SELECT * 
+FROM
+ movie
+WHERE
+ movie.director NOT IN (SELECT reviewer_name FROM reviewer);
+
+
+========================================================================
+
+task 12
+
+SELECT * 
+FROM
+ rating
+WHERE
+ reviewer_id=(SELECT reviewer_id FROM reviewer WHERE reviewer_name='Sarah Martinez');
+
+
+SELECT * 
+FROM
+ rating
+WHERE
+ reviewer_id NOT IN (SELECT reviewer_id FROM reviewer WHERE reviewer_name='Sarah Martinez');
+
+
+
+========================================================================
+
+task 13
+
+
+SELECT 
+  DISTINCT movie.year
+FROM
+ movie
+JOIN
+ rating ON movie.movie_id=rating.movie_id
+WHERE
+ rating.stars = 4 OR rating.stars = 5
+ORDER BY 
+ movie.year ASC; 
+
+
+SELECT 
+  DISTINCT movie.year
+FROM
+ movie
+WHERE
+ movie_id IN (SELECT movie_id FROM rating WHERE stars=4 or stars=5);
+ 
+
+
+========================================================================
+
+task 14
+
+ SELECT
+   reviewer_name
+ FROM
+   reviewer
+ WHERE
+   reviewer_id IN (SELECT reviewer_id FROM rating WHERE rating_date IS NULL);
+
+
+========================================================================
+
+task 15
+
+SELECT 
+ movie.title,
+ AVG(rating.stars) AS average_rating
+FROM
+ movie
+JOIN
+ rating ON movie.movie_id = rating.movie_id
+GROUP BY
+ movie.title
+ORDER BY
+ average_rating DESC,
+ movie.title ASC;
+
+
+========================================================================
+
+task 16
+
+DELETE FROM
+ rating
+WHERE
+ movie_id IN (SELECT movie_id FROM movie WHERE year<1970 OR year > 2000 );
+
+========================================================================
+
+task 17
+
+
+DELETE FROM 
+ rating
+WHERE
+ rating_date IS NULL;
